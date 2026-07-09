@@ -1,0 +1,52 @@
+{
+  "packageId": "app.filinstro.twa",
+  "host": "filinstro.netlify.app",
+  "name": "Filinstro",
+  "launcherName": "Filinstro",
+  "display": "standalone",
+  "themeColor": "#a855f7",
+  "navigationColor": "#0a0a0f",
+  "navigationColorDark": "#0a0a0f",
+  "navigationDividerColor": "#1e1b4b",
+  "navigationDividerColorDark": "#1e1b4b",
+  "backgroundColor": "#0a0a0f",
+  "enableNotifications": true,
+  "startUrl": "/",
+  "iconUrl": "https://filinstro.netlify.app/assets/icons/icon-512.png",
+  "maskableIconUrl": "https://filinstro.netlify.app/assets/icons/icon-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "./android.keystore",
+    "alias": "filinstro"
+  },
+  "appVersionCode": 1,
+  "appVersionName": "1.0.0",
+  "shortcuts": [
+    {
+      "name": "Comment Intel",
+      "shortName": "Comments",
+      "url": "/dashboard.html",
+      "iconName": "shortcut_comments"
+    },
+    {
+      "name": "Trend Growth",
+      "shortName": "Trends",
+      "url": "/dashboard.html#trends",
+      "iconName": "shortcut_trends"
+    }
+  ],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://filinstro.netlify.app/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {
+    "locationDelegation": { "enabled": false },
+    "playBilling": { "enabled": false }
+  },
+  "alphaDependencies": { "enabled": false },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://filinstro.netlify.app/",
+  "minSdkVersion": 21,
+  "orientation": "portrait"
+}

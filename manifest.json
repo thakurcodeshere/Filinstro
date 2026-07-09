@@ -1,0 +1,43 @@
+{
+  "name": "Filinstro",
+  "short_name": "Filinstro",
+  "description": "Instagram comment intelligence — classify, filter and grow with AI-powered insights",
+  "start_url": "/index.html",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a0a0f",
+  "theme_color": "#a855f7",
+  "categories": ["social", "productivity", "utilities"],
+  "lang": "en-US",
+  "icons": [
+    { "src": "assets/icons/icon-48.png",   "sizes": "48x48",   "type": "image/png", "purpose": "any" },
+    { "src": "assets/icons/icon-72.png",   "sizes": "72x72",   "type": "image/png", "purpose": "any" },
+    { "src": "assets/icons/icon-96.png",   "sizes": "96x96",   "type": "image/png", "purpose": "any" },
+    { "src": "assets/icons/icon-144.png",  "sizes": "144x144", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icons/icon-192.png",  "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "assets/icons/icon-512.png",  "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "screenshots": [
+    { "src": "assets/screenshots/screen1.png", "sizes": "1080x1920", "type": "image/png", "form_factor": "narrow", "label": "Comment Intelligence Dashboard" },
+    { "src": "assets/screenshots/screen2.png", "sizes": "1080x1920", "type": "image/png", "form_factor": "narrow", "label": "Trend & Growth Engine" }
+  ],
+  "shortcuts": [
+    {
+      "name": "Comment Intelligence",
+      "short_name": "Comments",
+      "description": "Analyze your post comments",
+      "url": "/dashboard.html",
+      "icons": [{ "src": "assets/icons/icon-96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Trend Growth",
+      "short_name": "Trends",
+      "description": "Explore trending hashtags",
+      "url": "/dashboard.html#trends",
+      "icons": [{ "src": "assets/icons/icon-96.png", "sizes": "96x96" }]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}

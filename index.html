@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Filinstro — Instagram Growth Intelligence</title>
+  <meta name="description" content="Filinstro connects to your Instagram, classifies your comments with AI, and helps you grow smarter with trend intelligence." />
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#a855f7" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Filinstro" />
+  <link rel="apple-touch-icon" href="/assets/icons/icon-192.png" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* ── Landing Layout ── */
+    .landing { min-height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; z-index: 1; padding: 40px 20px; }
+    .landing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; max-width: 1100px; width: 100%; align-items: center; }
+    @media(max-width:900px){ .landing-grid { grid-template-columns:1fr; gap:40px; text-align:center; } }
+
+    /* Hero */
+    .hero-logo { display:flex; align-items:center; gap:14px; margin-bottom:32px; }
+    .logo-icon { width:52px; height:52px; border-radius:14px; background:var(--grad-ig); display:flex; align-items:center; justify-content:center; box-shadow:0 8px 24px rgba(253,29,29,0.35); }
+    .logo-icon svg { width:28px; height:28px; fill:#fff; }
+    .logo-wordmark { font-size:28px; font-weight:900; letter-spacing:-1px; }
+    .hero-tag { display:inline-flex; align-items:center; gap:8px; background:rgba(168,85,247,0.1); border:1px solid rgba(168,85,247,0.25); border-radius:50px; padding:6px 14px; font-size:12px; font-weight:600; color:var(--purple); margin-bottom:20px; }
+    .hero-tag span { width:6px; height:6px; border-radius:50%; background:var(--purple); animation:pulse-glow 1.5s infinite; }
+    .hero-title { font-size:clamp(36px,5vw,60px); font-weight:900; line-height:1.1; letter-spacing:-2px; margin-bottom:20px; }
+    .hero-desc { font-size:16px; color:var(--text-secondary); line-height:1.7; max-width:480px; margin-bottom:36px; }
+    .hero-actions { display:flex; flex-wrap:wrap; gap:12px; }
+    .hero-trust { display:flex; align-items:center; gap:8px; margin-top:24px; font-size:13px; color:var(--text-muted); }
+    .hero-trust-dots { display:flex; }
+    .hero-trust-dots .dot { width:24px; height:24px; border-radius:50%; border:2px solid var(--bg-dark); background:var(--grad-ig); margin-left:-6px; }
+
+    /* Features Pill */
+    .feat-pills { display:flex; flex-direction:column; gap:12px; }
+    .feat-pill {
+      display:flex; align-items:center; gap:14px; padding:16px 20px;
+      background:var(--bg-card); border:1px solid var(--border);
+      border-radius:var(--radius-sm); backdrop-filter:blur(20px);
+      transition:all 0.3s; cursor:default;
+    }
+    .feat-pill:hover { border-color:rgba(168,85,247,0.3); transform:translateX(4px); }
+    .feat-pill-icon { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+    .feat-pill-body h4 { font-size:14px; font-weight:700; color:var(--text-primary); margin-bottom:3px; }
+    .feat-pill-body p { font-size:12px; color:var(--text-muted); }
+
+    /* Auth Card */
+    .auth-section { display:flex; flex-direction:column; gap:20px; }
+    .auth-card { padding:32px; }
+    .auth-title { font-size:22px; font-weight:800; margin-bottom:6px; }
+    .auth-subtitle { font-size:13px; color:var(--text-secondary); margin-bottom:28px; }
+    .auth-form { display:flex; flex-direction:column; gap:16px; }
+    .auth-divider { margin:20px 0; }
+    .demo-btn-wrap { display:flex; flex-direction:column; gap:10px; }
+    .real-api-note { font-size:11px; color:var(--text-muted); text-align:center; margin-top:4px; }
+    .real-api-note a { color:var(--purple); text-decoration:none; }
+    .real-api-note a:hover { text-decoration:underline; }
+
+    /* Tab switcher */
+    .auth-tabs { display:flex; background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:50px; padding:4px; margin-bottom:24px; }
+    .auth-tab { flex:1; text-align:center; padding:8px 0; border-radius:50px; font-size:13px; font-weight:600; color:var(--text-muted); cursor:pointer; transition:all 0.25s; border:none; background:none; }
+    .auth-tab.active { background:var(--grad-purple); color:#fff; }
+
+    /* Password strength */
+    .pw-strength { height:3px; border-radius:2px; margin-top:6px; background:var(--border); overflow:hidden; }
+    .pw-bar { height:100%; width:0; border-radius:2px; transition:width 0.3s, background 0.3s; }
+
+    /* Loading overlay */
+    #loading-overlay { position:fixed; inset:0; background:var(--bg-dark); z-index:9999; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:16px; }
+    .loading-logo { font-size:32px; font-weight:900; letter-spacing:-1px; }
+    .loading-bar { width:200px; height:3px; background:var(--border); border-radius:2px; overflow:hidden; }
+    .loading-fill { height:100%; background:var(--grad-ig); border-radius:2px; animation:loadingFill 1.5s ease forwards; }
+    @keyframes loadingFill { from{width:0} to{width:100%} }
+  </style>
+</head>
+<body>
+  <!-- Loading Screen -->
+  <div id="loading-overlay">
+    <div class="loading-logo grad-text-ig">filinstro</div>
+    <div class="loading-bar"><div class="loading-fill"></div></div>
+    <p style="font-size:13px;color:var(--text-muted);">Initializing intelligence engine…</p>
+  </div>
+
+  <!-- Background -->
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <!-- Landing -->
+  <main class="landing" id="main-content" style="opacity:0">
+    <div class="landing-grid">
+
+      <!-- Hero Left -->
+      <div class="slide-up">
+        <div class="hero-logo">
+          <div class="logo-icon">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+            </svg>
+          </div>
+          <span class="logo-wordmark grad-text-ig">filinstro</span>
+        </div>
+
+        <div class="hero-tag"><span></span> Instagram Intelligence Platform</div>
+        <h1 class="hero-title">
+          Understand your<br/><span class="grad-text-ig">audience</span>,<br/>dominate the<br/><span class="grad-text">algorithm.</span>
+        </h1>
+        <p class="hero-desc">
+          Filinstro connects to your Instagram, classifies every comment with AI — Hate, Comic, Abuse, Praise, Appreciate — and arms you with trend intelligence to grow faster.
+        </p>
+        <div class="hero-actions">
+          <button class="btn btn-ig btn-lg" onclick="scrollToAuth()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            Get Started
+          </button>
+          <button class="btn btn-ghost btn-lg" onclick="demoLogin()">▶ Try Demo</button>
+        </div>
+        <div class="hero-trust">
+          <div class="hero-trust-dots">
+            <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+          </div>
+          <span>Trusted by 12,000+ creators • 5-star rated</span>
+        </div>
+      </div>
+
+      <!-- Right: Features + Auth -->
+      <div style="display:flex;flex-direction:column;gap:24px;" id="auth-section">
+
+        <!-- Feature pills -->
+        <div class="feat-pills">
+          <div class="feat-pill">
+            <div class="feat-pill-icon" style="background:rgba(236,72,153,0.15);">🔐</div>
+            <div class="feat-pill-body"><h4>Secure Instagram Login</h4><p>OAuth-secured connection, your password is never stored</p></div>
+          </div>
+          <div class="feat-pill">
+            <div class="feat-pill-icon" style="background:rgba(168,85,247,0.15);">🧠</div>
+            <div class="feat-pill-body"><h4>AI Comment Intelligence</h4><p>5-way classification: Hate, Comic, Abuse, Praise, Appreciate</p></div>
+          </div>
+          <div class="feat-pill">
+            <div class="feat-pill-icon" style="background:rgba(16,185,129,0.15);">📈</div>
+            <div class="feat-pill-body"><h4>Trend & Growth Engine</h4><p>Real-time trends matched to your niche for explosive growth</p></div>
+          </div>
+        </div>
+
+        <!-- Auth Card -->
+        <div class="glass auth-card fade-in">
+          <div class="auth-tabs">
+            <button class="auth-tab active" id="tab-demo" onclick="switchTab('demo')">Demo Mode</button>
+            <button class="auth-tab" id="tab-real" onclick="switchTab('real')">Real Account</button>
+          </div>
+
+          <!-- Demo Tab -->
+          <div id="panel-demo">
+            <div class="auth-title">Try Filinstro Instantly</div>
+            <div class="auth-subtitle">Enter any name to explore with sample data — no real account needed.</div>
+            <div class="auth-form">
+              <div class="input-group">
+                <label class="input-label">Your Name / Handle</label>
+                <div class="input-wrap">
+                  <input class="input-field" type="text" id="demo-name" placeholder="e.g. @yourname" maxlength="30" />
+                  <span class="input-icon">👤</span>
+                </div>
+              </div>
+              <div class="input-group">
+                <label class="input-label">Niche / Category</label>
+                <div class="input-wrap">
+                  <select class="input-field" id="demo-niche" style="cursor:pointer;">
+                    <option value="lifestyle">Lifestyle</option>
+                    <option value="fitness">Fitness</option>
+                    <option value="food">Food & Recipes</option>
+                    <option value="tech">Tech & Gadgets</option>
+                    <option value="fashion">Fashion</option>
+                    <option value="travel">Travel</option>
+                    <option value="business">Business</option>
+                    <option value="comedy">Comedy</option>
+                  </select>
+                  <span class="input-icon">🏷️</span>
+                </div>
+              </div>
+              <button class="btn btn-purple btn-lg" style="width:100%;justify-content:center;" onclick="demoLogin()" id="demo-btn">
+                🚀 Enter Dashboard
+              </button>
+            </div>
+          </div>
+
+          <!-- Real Account Tab -->
+          <div id="panel-real" style="display:none;">
+            <div class="auth-title">Connect Real Account</div>
+            <div class="auth-subtitle">Requires an Instagram Business or Creator account linked to a Facebook Page.</div>
+            <div class="auth-form">
+              <div class="input-group">
+                <label class="input-label">Instagram Username</label>
+                <div class="input-wrap">
+                  <input class="input-field" type="text" id="real-username" placeholder="@username" />
+                  <span class="input-icon">@</span>
+                </div>
+              </div>
+              <div class="input-group">
+                <label class="input-label">Facebook App ID</label>
+                <div class="input-wrap">
+                  <input class="input-field" type="text" id="real-appid" placeholder="Your Meta App ID" />
+                  <span class="input-icon">🔑</span>
+                </div>
+              </div>
+              <button class="btn btn-ig btn-lg" style="width:100%;justify-content:center;" onclick="realLogin()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                Connect via Instagram
+              </button>
+              <p class="real-api-note">Requires <a href="https://developers.facebook.com/" target="_blank">Meta for Developers</a> app setup. <a href="#" onclick="switchTab('demo')">Try demo instead →</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="js/pwa.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    // Hide loading screen after 1.5s
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.getElementById('loading-overlay').style.display = 'none';
+        const main = document.getElementById('main-content');
+        main.style.opacity = '1';
+        main.classList.add('fade-in');
+      }, 1600);
+    });
+
+    function scrollToAuth() {
+      document.getElementById('auth-section').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function switchTab(tab) {
+      document.getElementById('panel-demo').style.display = tab === 'demo' ? 'block' : 'none';
+      document.getElementById('panel-real').style.display = tab === 'real' ? 'block' : 'none';
+      document.getElementById('tab-demo').classList.toggle('active', tab === 'demo');
+      document.getElementById('tab-real').classList.toggle('active', tab === 'real');
+    }
+
+    function showToast(msg, icon = '✅') {
+      const c = document.getElementById('toast-container');
+      const t = document.createElement('div');
+      t.className = 'toast';
+      t.innerHTML = `<span>${icon}</span><span>${msg}</span>`;
+      c.appendChild(t);
+      setTimeout(() => t.remove(), 3500);
+    }
+  </script>
+</body>
+</html>

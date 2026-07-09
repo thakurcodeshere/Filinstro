@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Filinstro — Dashboard</title>
+  <meta name="description" content="Your Instagram comment intelligence dashboard — filter, classify and grow."/>
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#a855f7" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Filinstro" />
+  <link rel="apple-touch-icon" href="/assets/icons/icon-192.png" />
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    /* ── Dashboard Shell ── */
+    body { overflow: hidden; }
+    .app-shell { display: flex; height: 100vh; position: relative; z-index: 1; }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 260px; flex-shrink: 0; display: flex; flex-direction: column;
+      border-right: 1px solid var(--border); background: rgba(255,255,255,0.02);
+      backdrop-filter: blur(20px); overflow-y: auto; padding: 0;
+    }
+    .sidebar-header { padding: 20px; border-bottom: 1px solid var(--border); }
+    .sidebar-logo { font-size: 20px; font-weight: 900; letter-spacing: -1px; margin-bottom: 16px; }
+    .profile-card { display: flex; align-items: center; gap: 12px; }
+    .profile-avatar {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--grad-ig); display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 800; color: #fff; flex-shrink: 0;
+      border: 2px solid rgba(255,255,255,0.2);
+    }
+    .profile-name { font-size: 14px; font-weight: 700; }
+    .profile-niche { font-size: 11px; color: var(--text-muted); text-transform: capitalize; }
+    .profile-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 16px; border-bottom: 1px solid var(--border); }
+    .profile-stat { text-align: center; }
+    .profile-stat-val { font-size: 15px; font-weight: 800; background: var(--grad-purple); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .profile-stat-lbl { font-size: 10px; color: var(--text-muted); font-weight: 500; }
+
+    .sidebar-section-title { padding: 12px 20px 6px; font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+    .post-list { padding: 0 12px; display: flex; flex-direction: column; gap: 4px; }
+    .post-item {
+      display: flex; align-items: center; gap: 10px; padding: 10px 8px;
+      border-radius: var(--radius-xs); cursor: pointer; transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+    .post-item:hover { background: var(--bg-card); }
+    .post-item.active { background: rgba(168,85,247,0.1); border-color: rgba(168,85,247,0.25); }
+    .post-thumb { width: 36px; height: 36px; border-radius: 8px; object-fit: cover; flex-shrink: 0; background: var(--border); }
+    .post-item-text { flex: 1; min-width: 0; }
+    .post-item-title { font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .post-item-meta { font-size: 10px; color: var(--text-muted); }
+    .post-item-count { font-size: 11px; font-weight: 700; color: var(--purple); flex-shrink: 0; }
+
+    .sidebar-nav { padding: 12px; margin-top: auto; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 4px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+      border-radius: var(--radius-xs); cursor: pointer; font-size: 13px;
+      font-weight: 500; color: var(--text-secondary); transition: all 0.2s;
+      border: none; background: none; width: 100%; text-align: left;
+    }
+    .nav-item:hover { background: var(--bg-card); color: var(--text-primary); }
+    .nav-item.active { background: rgba(168,85,247,0.1); color: var(--purple); }
+
+    /* ── Main Content ── */
+    .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .top-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 24px; border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,0.02); backdrop-filter: blur(10px);
+      flex-shrink: 0;
+    }
+    .top-bar-title { font-size: 18px; font-weight: 800; }
+    .top-bar-actions { display: flex; align-items: center; gap: 10px; }
+    .content-panels { flex: 1; display: flex; overflow: hidden; }
+
+    /* ── Comments Panel ── */
+    .comments-panel { flex: 1; display: flex; flex-direction: column; overflow: hidden; padding: 20px; gap: 16px; }
+    .panel-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    .panel-title { font-size: 16px; font-weight: 800; }
+    .comments-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 4px; }
+    .comment-card {
+      display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px;
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm);
+      transition: all 0.25s; animation: slideUp 0.3s ease both;
+    }
+    .comment-card:hover { border-color: rgba(168,85,247,0.2); background: var(--bg-card-hover); }
+    .comment-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+    .comment-body { flex: 1; min-width: 0; }
+    .comment-header { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; flex-wrap: wrap; }
+    .comment-user { font-size: 13px; font-weight: 700; }
+    .comment-time { font-size: 11px; color: var(--text-muted); }
+    .comment-text { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+    .comment-footer { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+    .comment-likes { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
+
+    /* Category stats bar */
+    .stats-strip {
+      display: flex; flex-wrap: nowrap; gap: 8px;
+      overflow-x: auto; padding-bottom: 4px;
+    }
+    .stats-strip::-webkit-scrollbar { height: 3px; }
+    .stats-strip::-webkit-scrollbar-thumb { background: rgba(168,85,247,0.3); border-radius: 2px; }
+    .stat-strip-item {
+      display: flex; flex-direction: column; align-items: center; gap: 5px;
+      padding: 10px 14px; border-radius: var(--radius-sm); min-width: 90px;
+      background: var(--bg-card); border: 1px solid var(--border); cursor: pointer;
+      transition: all 0.2s; flex-shrink: 0;
+    }
+    .stat-strip-item:hover { transform: translateY(-2px); }
+    .stat-strip-num { font-size: 18px; font-weight: 900; }
+    .stat-strip-lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
+    .stat-strip-bar { width: 100%; height: 3px; border-radius: 2px; }
+
+    /* ── Right Panel: Trends ── */
+    .trends-panel {
+      width: 300px; flex-shrink: 0; border-left: 1px solid var(--border);
+      display: flex; flex-direction: column; overflow: hidden;
+    }
+    .trends-tabs { display: flex; border-bottom: 1px solid var(--border); }
+    .trends-tab {
+      flex: 1; padding: 14px; text-align: center; font-size: 12px; font-weight: 700;
+      cursor: pointer; border: none; background: none; color: var(--text-muted);
+      border-bottom: 2px solid transparent; transition: all 0.2s;
+    }
+    .trends-tab.active { color: var(--purple); border-bottom-color: var(--purple); }
+    .trends-body { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+
+    .trend-item {
+      padding: 14px; border-radius: var(--radius-sm);
+      background: var(--bg-card); border: 1px solid var(--border);
+      transition: all 0.25s; cursor: pointer;
+    }
+    .trend-item:hover { border-color: rgba(168,85,247,0.3); transform: translateX(3px); }
+    .trend-item-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+    .trend-hashtag { font-size: 14px; font-weight: 800; color: var(--text-primary); }
+    .trend-growth { font-size: 11px; font-weight: 700; color: var(--green); background: rgba(16,185,129,0.1); padding: 2px 8px; border-radius: 50px; }
+    .trend-posts { font-size: 11px; color: var(--text-muted); margin-bottom: 8px; }
+    .trend-score-bar { height: 3px; border-radius: 2px; background: var(--grad-purple); }
+    .trend-tip { font-size: 11px; color: var(--text-secondary); margin-top: 8px; line-height: 1.5; display: none; }
+    .trend-item:hover .trend-tip { display: block; }
+
+    .tip-card {
+      padding: 14px; border-radius: var(--radius-sm);
+      background: var(--bg-card); border: 1px solid var(--border);
+    }
+    .tip-icon { font-size: 22px; margin-bottom: 8px; }
+    .tip-title { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+    .tip-body { font-size: 12px; color: var(--text-secondary); line-height: 1.6; }
+
+    /* ── View Switcher ── */
+    #view-comments, #view-trends { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* ── Engagement Score ── */
+    .engage-card { padding: 16px; text-align: center; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm); }
+    .engage-score { font-size: 42px; font-weight: 900; background: var(--grad-purple); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .engage-label { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+    .engage-sub { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+
+    /* ── Mobile ── */
+    @media(max-width:900px){
+      .sidebar { display: none; }
+      .trends-panel { display: none; }
+    }
+
+    /* Chart area */
+    .donut-wrap { display: flex; align-items: center; gap: 16px; padding: 16px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm); }
+    .donut-legend { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+    .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .legend-val { margin-left: auto; font-weight: 700; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <div class="bg-orbs" style="opacity:0.4">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+  </div>
+
+  <div class="app-shell fade-in">
+    <!-- ── SIDEBAR ── -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo grad-text-ig">filinstro</div>
+        <div class="profile-card">
+          <div class="profile-avatar" id="profile-avatar">?</div>
+          <div>
+            <div class="profile-name" id="profile-name">Loading…</div>
+            <div class="profile-niche" id="profile-niche">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-stats">
+        <div class="profile-stat">
+          <div class="profile-stat-val" id="stat-followers">—</div>
+          <div class="profile-stat-lbl">Followers</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat-val" id="stat-following">—</div>
+          <div class="profile-stat-lbl">Following</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat-val" id="stat-posts">—</div>
+          <div class="profile-stat-lbl">Posts</div>
+        </div>
+      </div>
+
+      <div class="sidebar-section-title">Your Posts</div>
+      <div class="post-list" id="post-list">
+        <!-- Populated by JS -->
+      </div>
+
+      <div class="sidebar-nav">
+        <button class="nav-item active" id="nav-comments" onclick="switchView('comments')">💬 Comment Intel</button>
+        <button class="nav-item" id="nav-trends" onclick="switchView('trends')">📈 Trend Growth</button>
+        <button class="nav-item" onclick="logout()">🚪 Logout</button>
+      </div>
+    </aside>
+
+    <!-- ── MAIN ── -->
+    <div class="main-content">
+      <div class="top-bar">
+        <div>
+          <div class="top-bar-title" id="top-bar-title">Comment Intelligence</div>
+          <div style="font-size:12px;color:var(--text-muted)" id="top-bar-sub">Select a post from the sidebar</div>
+        </div>
+        <div class="top-bar-actions">
+          <button class="btn btn-ghost btn-sm" onclick="refreshComments()" id="refresh-btn">↻ Refresh</button>
+          <button class="btn btn-purple btn-sm" onclick="exportCSV()">⬇ Export</button>
+        </div>
+      </div>
+
+      <div class="content-panels">
+        <!-- Comments View -->
+        <div id="view-comments" style="flex:1;overflow:hidden;display:flex;flex-direction:column;">
+          <div class="comments-panel">
+
+            <!-- Stats strip (JS-rendered) -->
+            <div class="stats-strip" id="stats-strip"></div>
+
+            <!-- Filter chips -->
+            <div class="panel-header">
+              <div class="panel-title" id="comments-panel-title">All Comments</div>
+              <div class="chips" id="filter-chips">
+                <span class="chip chip-all active" onclick="filterBy('all')">All</span>
+                <span class="chip chip-praise" onclick="filterBy('praise')">🌟 Praise</span>
+                <span class="chip chip-appreciate" onclick="filterBy('appreciate')">💚 Appreciate</span>
+                <span class="chip chip-motivation" onclick="filterBy('motivation')">💪 Motivation</span>
+                <span class="chip chip-question" onclick="filterBy('question')">❓ Question</span>
+                <span class="chip chip-comic" onclick="filterBy('comic')">😂 Comic</span>
+                <span class="chip chip-sarcasm" onclick="filterBy('sarcasm')">😏 Sarcasm</span>
+                <span class="chip chip-education" onclick="filterBy('education')">📚 Education</span>
+                <span class="chip chip-tech" onclick="filterBy('tech')">💻 Tech</span>
+                <span class="chip chip-politics" onclick="filterBy('politics')">🏛️ Politics</span>
+                <span class="chip chip-neutral" onclick="filterBy('neutral')">💬 Neutral</span>
+                <span class="chip chip-hate" onclick="filterBy('hate')">🔴 Hate</span>
+                <span class="chip chip-abuse" onclick="filterBy('abuse')">⚠️ Abuse</span>
+                <span class="chip chip-spam" onclick="filterBy('spam')">📢 Spam</span>
+              </div>
+            </div>
+
+            <!-- Comment list -->
+            <div class="comments-list scroll-panel" id="comments-list">
+              <div style="text-align:center;padding:60px 20px;color:var(--text-muted);">
+                <div style="font-size:48px;margin-bottom:16px;">💬</div>
+                <div style="font-size:16px;font-weight:700;margin-bottom:8px;">Select a post</div>
+                <div style="font-size:13px;">Choose a post from the sidebar to analyze its comments</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trends Panel (right) -->
+        <div class="trends-panel" id="trends-panel">
+          <div class="trends-tabs">
+            <button class="trends-tab active" id="ttab-trends" onclick="switchTrendsTab('trends')">📈 Trends</button>
+            <button class="trends-tab" id="ttab-tips" onclick="switchTrendsTab('tips')">💡 Growth Tips</button>
+          </div>
+          <div class="trends-body scroll-panel" id="trends-body">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="js/pwa.js"></script>
+  <script src="js/comments.js"></script>
+  <script src="js/trends.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
